@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Interpoling</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+</head>
+
+<body>
+    <section>
+        <div class="justify-content-center aligns-items-center d-flex">
+            <h1>Calculadora</h1>
+        </div>
+    </section>
+    <section>
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="interpolacionSection-tab" data-toggle="pill" href="#interpolacionSection"
+                    role="tab" aria-controls="interpolacionSection" aria-selected="true">Interpolación</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="runga-tab" data-toggle="pill" href="#runga" role="tab" aria-controls="runga"
+                    aria-selected="false">Runge Kutta</a>
+            </li>
+
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="interpolacionSection" role="tabpanel"
+                aria-labelledby="interpolacionSection-tab">
+                <div class="card">
+                    <div class="card-header">
+                        Interpolación de Newton
+                    </div>
+                    <div class="card-body">
+                        {% csrf_token %}
+                        <form action="{%  url 'interpolacion'%}" method="get">
+                            <input type="text" name="tipo" id="tipo" value="interpolacion" style="display: none">
+                            <div class="form-group">
+                                <input type="number" class="form-control" name="valorAI" id="valorAI"
+                                    aria-describedby="interpolarHelp" placeholder="Valor a interpolar">
+                            </div>
+                            <div class="form-group">
+                                <input type="number" class="form-control" name="grado" id="grado"
+                                    aria-describedby="gradohelp" placeholder="Grado">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="valoresX" id="valoresX"
+                                    aria-describedby="valoresXhelp" placeholder="Valores de X (separalos con una coma)">
+                                <small id="valoresXhelp" class="form-text text-muted">la cantidad de numeros debe ser
+                                    acorde al
+                                    grado ingresado</small>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="fx" id="fx" aria-describedby="helpFx"
+                                    placeholder="Valores de f(x) (separalos con una coma)">
+                                <small id="helpFx" class="form-text text-muted">la cantidad de numeros debe ser acorde
+                                    al grado
+                                    ingresado</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Calcular</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="runga" role="tabpanel" aria-labelledby="runga-tab">
+                <div class="card">
+                    <div class="card-header">
+                        Método Runge Kutta
+                    </div>
+                    <div class="card-body">
+                        {% csrf_token %}
+                        <form action="{%  url 'interpolacion'%}" method="get">
+                            <input type="text" name="tipo" id="tipo" value="runga" styles="display: none; " 
+                                class="m-2" readonly>
+                            <div class="form-group">
+                                <input type="number" class="form-control" name="equis" id="equis"
+                                    aria-describedby="equisHelp" placeholder="Valor de X">
+                            </div>
+                            <div class="form-group">
+                                <input type="number" class="form-control" name="ye" id="ye" aria-describedby="yehelp"
+                                    placeholder="Valor de Y">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="ache" id="ache"
+                                    aria-describedby="achehelp" placeholder="Valor de H">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="equisInicial" id="equisInicial"
+                                    aria-describedby="equisInicialHelp" placeholder="Valor de X inicial">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="equisFinal" id="equisFinal"
+                                    aria-describedby="equisFinalHelp" placeholder="Valor de X final">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Calcular</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    {% if calculate %}
+
+    <section>
+        <div class="card">
+            <h3>Solución</h3>
+            <h5>{{polinomio}}</h5>
+        </div>
+    </section>
+
+    {% endif %}
+    {% if result %}
+
+    <section>
+        <div class="card">
+            <div class="card-header">
+            <h4>Valores XSOL</h4>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">XSOL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in runga.valores1 %}
+                    <tr>
+                        <td>{o}</td>
+                    </tr>
+                    {% endfor %}
+                   
+                </tbody>
+            </table>
+        </div>
+        <div class="card mt-5">
+            <div class="card-header">
+            <h4>Valores YSOL</h4>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">YSOL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in runga.valores2 %}
+                    <tr>
+                        <td>{o}</td>
+                    </tr>
+                    {% endfor %}
+                   
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    {% endif %}
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
