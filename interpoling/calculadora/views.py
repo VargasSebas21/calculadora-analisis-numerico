@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .scripts import interpolacionNewton, runge_kutta_4
+from .scripts import interpolacionNewton, runge_kutta_4, get_plot
 # Create your views here.
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -22,7 +22,8 @@ def interpolacion(request):
         fx = np.array(request.GET['fx'].split(sep=','))
         fxArray =np.asarray(fx, dtype = float)
         polinomio = interpolacionNewton(valorAInterpolar,grado,valoresArray,fxArray)
-        return render(request,'index.html',context={'polinomio': polinomio,'calculate': True, 'result': False})
+        chart = get_plot(valoresArray,fxArray, 'GRAFICA POLINOMIO DE NEWTON')
+        return render(request,'index.html',context={'polinomio': polinomio,'calculate': True, 'result': False,'chart': chart})
     elif tipo == 'runga':
         equis = float(request.GET['equis'])
         ye = float(request.GET['ye'])
@@ -30,7 +31,8 @@ def interpolacion(request):
         equisInicial = float(request.GET['equisInicial'])
         equisFinal = float(request.GET['equisFinal'])
         valores1, valores2 = runge_kutta_4(equis , ye , phi,ache ,equisInicial, equisFinal)
+        chart = get_plot(valores1,valores2, 'GRAFICA RUNGEKUTTA')
         print('hola',valores1)
-        return render(request,'inter.html',context={'polinomio': math.inf,'calculate': False, 'result': True, 'runga': {'valores1':valores1, 'valores2': valores2}})
+        return render(request,'inter.html',context={'polinomio': math.inf,'calculate': False, 'result': True, 'runga': {'valores1':valores1, 'valores2': valores2}, 'chart': chart})
     else:
         return render(request, 'index.html', context = {'polinomio': math.inf,'calculate': False, 'result': False,})  

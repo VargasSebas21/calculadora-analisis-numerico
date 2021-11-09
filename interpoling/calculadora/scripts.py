@@ -1,5 +1,7 @@
 # Interpolacion de newton
-
+import matplotlib.pyplot as plt
+import base64
+from io import BytesIO
 import numpy as np
 ### se trabaja con una función polinómica y depende del grado que el usuario ingrese
 ## Debe recibir el grado como parámetro y el valor a interpolar
@@ -62,4 +64,24 @@ def runge_kutta_4(x, y, dydx, h, xi, xf):
         x = xn
     return xsol, ysol
 
-def 
+def getGraph():
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    graph = base64.b64encode(image_png)
+    graph = graph.decode('utf-8')
+    buffer.close()
+    return graph
+
+def get_plot(x,y, title):
+    plt.switch_backend('AGG')
+    plt.figure(figsize= (10,5))
+    plt.title(title)
+    plt.plot(x,y)
+    plt.xticks(rotation = 45)
+    plt.xlabel('XSOL')
+    plt.ylabel('YSOL')
+    plt.tight_layout()
+    graph= getGraph()
+    return graph
